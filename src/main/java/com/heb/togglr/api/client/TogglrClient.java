@@ -26,7 +26,7 @@ public class TogglrClient {
     private static Logger logger = LoggerFactory.getLogger(TogglrClient.class);
 
     @Value("${heb.togglr.client.app-id}")
-    private String applicationId;
+    private int applicationId;
 
     @Value("${heb.togglr.client.server-url}")
     private String togglrUrl;
@@ -44,13 +44,27 @@ public class TogglrClient {
         this.cache = new HashMap<>();
     }
 
+    /**
+     * Manually clear the cache.
+     */
+    public void clearCache(){
+        this.togglrUpdateNotifier.clearCache();
+    }
 
-    public List<GrantedAuthority> getFeaturesForConfig(ActiveFeaturesRequest activeFeaturesRequest, String userId){
+    /**
+     * Get the list of ActiveFeatures, returned as GrantedAuthorities for a config.
+     * @param activeFeaturesRequest List of active Features.
+     * @param cacheId Identifier used for caching the Features.
+     * @return
+     */
+    public List<GrantedAuthority> getFeaturesForConfig(ActiveFeaturesRequest activeFeaturesRequest, String cacheId){
 
         List<FeatureResponse> features = null;
 
-        if(!this.togglrUpdateNotifier.doesClientNeedUpdate(userId)){
-            features = cache.get(userId);
+        activeFeaturesRequest.setAppId(this.applicationId);
+
+        if(!this.togglrUpdateNotifier.doesClientNeedUpdate(cacheId)){
+            features = cache.get(cacheId);
         }
 
         if(features == null) {
@@ -60,14 +74,14 @@ public class TogglrClient {
                 if (availableFeaturesList != null) {
 
                     features = availableFeaturesList.getAvailableFeatures();
-                    this.cache.put(userId, availableFeaturesList.getAvailableFeatures());
-                    this.togglrUpdateNotifier.updateUserVersion(userId);
+                    this.cache.put(cacheId, availableFeaturesList.getAvailableFeatures());
+                    this.togglrUpdateNotifier.updateUserVersion(cacheId);
                 }
 
             } catch (Exception e) {
                 logger.error("Could not update Togglr Configuration");
 
-                features = cache.get(userId);
+                features = cache.get(cacheId);
 
                 if(features != null){
                     List<GrantedAuthority> activeFeatures = new ArrayList<>();
