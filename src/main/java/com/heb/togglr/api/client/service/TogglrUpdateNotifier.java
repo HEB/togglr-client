@@ -37,7 +37,7 @@ public class TogglrUpdateNotifier {
         Long lastUpdateTime = this.lastUpdateTime.get(cacheId);
 
 
-        if(lastUpdate == null || lastUpdate < updateCount || lastUpdateTime > cacheTime){
+        if(lastUpdate == null || lastUpdate < updateCount || Instant.now().toEpochMilli() - lastUpdateTime > cacheTime){
             return true;
         }
 
