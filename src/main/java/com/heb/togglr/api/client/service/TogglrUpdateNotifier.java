@@ -4,11 +4,16 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class TogglrUpdateNotifier {
+
+    private static Logger logger = LoggerFactory.getLogger(TogglrUpdateNotifier.class);
 
     @Value("${heb.togglr.cache-time:#{0}}")
     private long cacheTime;
@@ -23,6 +28,7 @@ public class TogglrUpdateNotifier {
     }
 
     public void registerNewUpdate(){
+        logger.info("Registered a Togglr Config Update.");
         this.updateCount++;
         this.clearCache();
     }
@@ -38,9 +44,11 @@ public class TogglrUpdateNotifier {
 
 
         if(lastUpdate == null || lastUpdate < updateCount || Instant.now().toEpochMilli() - lastUpdateTime > cacheTime){
+            logger.debug(cacheId + " requires a feature update.");
             return true;
         }
 
+        logger.debug(cacheId + " does not requires a feature update.");
         return false;
     }
 
@@ -49,6 +57,7 @@ public class TogglrUpdateNotifier {
      * @param cacheId
      */
     public void updateUserVersion(String cacheId){
+        logger.debug("Updating Togglr version for " + cacheId);
         this.lastUpdateReceivedd.put(cacheId, this.updateCount);
         this.lastUpdateTime.put(cacheId, Instant.now().toEpochMilli());
     }
@@ -57,6 +66,7 @@ public class TogglrUpdateNotifier {
      * Reset the maps used for caching.
      */
     public void clearCache(){
+        logger.info("Togglr cache cleared.");
         this.lastUpdateReceivedd.clear();
         this.lastUpdateTime.clear();
     }
