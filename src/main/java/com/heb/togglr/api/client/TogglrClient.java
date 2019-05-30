@@ -60,16 +60,21 @@ public class TogglrClient {
 
         activeFeaturesRequest.setAppId(this.applicationId);
 
+        logger.debug("Handling feature request for " + cacheId);
+
         if(!this.togglrUpdateNotifier.doesClientNeedUpdate(cacheId)){
+            logger.debug(cacheId + " requires update.");
             features = cache.get(cacheId);
         }
 
         if(features == null) {
+            logger.trace(cacheId + " has no cached features.");
             try {
+                logger.trace("Making rest call to " + this.togglrUrl);
                 AvailableFeaturesList availableFeaturesList = this.restTemplate.postForObject(this.togglrUrl, activeFeaturesRequest, AvailableFeaturesList.class);
 
+                logger.debug("Rest call to " + this.togglrUrl + " succeeded");
                 if (availableFeaturesList != null) {
-
                     features = availableFeaturesList.getAvailableFeatures();
                     this.cache.put(cacheId, availableFeaturesList.getAvailableFeatures());
                     this.togglrUpdateNotifier.updateUserVersion(cacheId);
