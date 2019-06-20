@@ -27,4 +27,12 @@ public class ActiveFeaturesRequest {
     public void setConfigs(Map<String, String> configs) {
         this.configs = configs;
     }
+
+    @Override
+    public String toString() {
+        return "ActiveFeaturesRequest{" +
+                "appId=" + appId +
+                ", configs=" + configs.toString() +
+                '}';
+    }
 }
