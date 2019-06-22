@@ -31,6 +31,7 @@ public abstract class TogglrCache {
 
     public TogglrCache(TogglrUpdateNotifier updateNotifier){
         this.updateNotifier = updateNotifier;
+        this.restTemplate = new RestTemplate();
     }
 
     public List<GrantedAuthority> getFeaturesForConfig(ActiveFeaturesRequest activeFeaturesRequest, String cacheId){
@@ -40,6 +41,7 @@ public abstract class TogglrCache {
         activeFeaturesRequest.setAppId(this.applicationId);
 
         logger.debug("Handling feature request for " + cacheId);
+        logger.trace(activeFeaturesRequest.toString());
 
         if(!this.updateNotifier.doesClientNeedUpdate(cacheId)){
             logger.debug(cacheId + " does not require update.");
@@ -52,8 +54,10 @@ public abstract class TogglrCache {
                 logger.trace("Making rest call to " + this.togglrUrl);
                 AvailableFeaturesList availableFeaturesList = this.restTemplate.postForObject(this.togglrUrl, activeFeaturesRequest, AvailableFeaturesList.class);
 
-                logger.debug("Rest call to " + this.togglrUrl + " succeeded");
+                logger.debug("Rest call to " + this.togglrUrl + " completed");
                 if (availableFeaturesList != null) {
+                    logger.debug("Got a valid value as a response.");
+                    logger.trace(availableFeaturesList.toString());
                     features = availableFeaturesList.getAvailableFeatures();
                     this.setCachedFeatures(cacheId, availableFeaturesList.getAvailableFeatures());
                     this.updateNotifier.updateUserVersion(cacheId);
@@ -61,7 +65,7 @@ public abstract class TogglrCache {
 
             } catch (Exception e) {
                 logger.error("Could not update Togglr Configuration");
-
+                logger.error(e.getMessage());
                 features = this.getCachedFeatures(cacheId);
 
                 if(features != null){

@@ -5,7 +5,7 @@
 
     <groupId>com.heb.togglr</groupId>
     <artifactId>togglr-client</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.4-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>togglr-client</name>
@@ -70,11 +70,11 @@
                             </goal>
                         </goals>
                         <configuration>
-                            <groupId>${groupId}</groupId>
-                            <artifactId>${artifactId}</artifactId>
-                            <version>${version}}</version>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>${project.artifactId}</artifactId>
+                            <version>${project.version}}</version>
                             <packaging>jar</packaging>
-                            <file>${basedir}\target\${artifactId}-${version}.${packaging}</file>
+                            <file>${project.basedir}\target\${project.artifactId}-${project.version}.${project.packaging}</file>
                         </configuration>
                     </execution>
                 </executions>

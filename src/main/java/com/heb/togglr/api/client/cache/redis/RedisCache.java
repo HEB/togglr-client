@@ -23,7 +23,7 @@ public class RedisCache extends TogglrCache {
     private static Logger logger = LoggerFactory.getLogger(RedisCache.class);
 
     @Value("${heb.togglr.client.app-id}")
-    private int applicationId;
+    private Integer applicationId;
 
     @Value("${heb.togglr.client.server-url}")
     private String togglrUrl;
@@ -32,12 +32,18 @@ public class RedisCache extends TogglrCache {
 
     public RedisCache(TogglrUpdateNotifier updateNotifier, RedisService redisService) {
         super(updateNotifier);
+        this.redisService = redisService;
     }
 
 
     @Override
     public List<FeatureResponse> getCachedFeatures(String cacheId) {
-        return this.redisService.getCachedFeatures(cacheId).getAvailableFeatures();
+        RedisAvailableFeatureList availableFeatureList = this.redisService.getCachedFeatures(cacheId);
+        if(availableFeatureList != null) {
+            return availableFeatureList.getAvailableFeatures();
+        }else{
+            return null;
+        }
     }
 
     @Override
