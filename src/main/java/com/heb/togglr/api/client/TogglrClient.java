@@ -1,51 +1,31 @@
 package com.heb.togglr.api.client;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import com.heb.togglr.api.client.cache.TogglrCache;
 import com.heb.togglr.api.client.model.requests.ActiveFeaturesRequest;
-import com.heb.togglr.api.client.model.response.AvailableFeaturesList;
-import com.heb.togglr.api.client.model.response.FeatureResponse;
-import com.heb.togglr.api.client.service.TogglrUpdateNotifier;
 
 @Service
 public class TogglrClient {
 
     private static Logger logger = LoggerFactory.getLogger(TogglrClient.class);
 
-    @Value("${heb.togglr.client.app-id}")
-    private int applicationId;
+    private TogglrCache togglrCache;
 
-    @Value("${heb.togglr.client.server-url}")
-    private String togglrUrl;
-
-    private TogglrUpdateNotifier togglrUpdateNotifier;
-    private RestTemplate restTemplate;
-
-    private Map<String, List<FeatureResponse>> cache;
-
-    public TogglrClient(TogglrUpdateNotifier togglrUpdateNotifier){
-        this.togglrUpdateNotifier = togglrUpdateNotifier;
-        this.restTemplate = new RestTemplate();
-        this.cache = new HashMap<>();
+    public TogglrClient(TogglrCache togglrCache){
+        this.togglrCache = togglrCache;
     }
 
     /**
      * Manually clear the cache.
      */
     public void clearCache(){
-        this.togglrUpdateNotifier.clearCache();
+        this.togglrCache.clearCache();
     }
 
     /**
@@ -54,59 +34,9 @@ public class TogglrClient {
      * @param cacheId Identifier used for caching the Features.
      * @return
      */
-    public List<GrantedAuthority> getFeaturesForConfig(ActiveFeaturesRequest activeFeaturesRequest, String cacheId){
+    public List<GrantedAuthority> getFeaturesForConfig(ActiveFeaturesRequest activeFeaturesRequest, String cacheId) {
 
-        List<FeatureResponse> features = null;
+        return this.togglrCache.getFeaturesForConfig(activeFeaturesRequest, cacheId);
 
-        activeFeaturesRequest.setAppId(this.applicationId);
-
-        logger.debug("Handling feature request for " + cacheId);
-
-        if(!this.togglrUpdateNotifier.doesClientNeedUpdate(cacheId)){
-            logger.debug(cacheId + " requires update.");
-            features = cache.get(cacheId);
-        }
-
-        if(features == null) {
-            logger.trace(cacheId + " has no cached features.");
-            try {
-                logger.trace("Making rest call to " + this.togglrUrl);
-                AvailableFeaturesList availableFeaturesList = this.restTemplate.postForObject(this.togglrUrl, activeFeaturesRequest, AvailableFeaturesList.class);
-
-                logger.debug("Rest call to " + this.togglrUrl + " succeeded");
-                if (availableFeaturesList != null) {
-                    features = availableFeaturesList.getAvailableFeatures();
-                    this.cache.put(cacheId, availableFeaturesList.getAvailableFeatures());
-                    this.togglrUpdateNotifier.updateUserVersion(cacheId);
-                }
-
-            } catch (Exception e) {
-                logger.error("Could not update Togglr Configuration");
-
-                features = cache.get(cacheId);
-
-                if(features != null){
-                    List<GrantedAuthority> activeFeatures = new ArrayList<>();
-
-                    for (FeatureResponse featureResponse : features) {
-                        activeFeatures.add(new SimpleGrantedAuthority(featureResponse.getDescr()));
-                    }
-
-                    return activeFeatures;
-                }
-            }
-        }
-
-        if(features == null) {
-            return new ArrayList<>();
-        }else{
-            List<GrantedAuthority> activeFeatures = new ArrayList<>();
-
-            for (FeatureResponse featureResponse : features) {
-                activeFeatures.add(new SimpleGrantedAuthority(featureResponse.getDescr()));
-            }
-
-            return activeFeatures;
-        }
     }
 }

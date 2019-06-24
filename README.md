@@ -27,11 +27,19 @@ If your application is under the com.heb package, you can set it to `com.heb`.
 ### Properties
 Add the following properties to your Spring Application (or configure them through Environment Variables):
 
-`com.heb.togglr.client.app-id`  is the application Id within your Togglr server.
+`heb.togglr.client.app-id`  is the application Id within your Togglr server.
 
-`com.heb.togglr.client.server-url`  is the endpoint URL of your Togglr server.
+`heb.togglr.client.server-url`  is the endpoint URL of your Togglr server.
 
 `heb.togglr.cache-time` is the amount of time you want Togglr features to be cached for. (Updates to Togglr will cause a cache refresh regardless of this value being set)
+
+`heb.togglr.client.cache-type` Value can be either `redis` or `in-memory`
+
+If the `cache-type` is set to `redis` you'll need to include the following properties:
+
+`heb.togglr.redis.host` Host for Redis
+
+`heb.togglr.redis.port` Port for Redis
 
 You can get your application ID from the Togglr Server.
 
