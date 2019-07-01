@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.heb.togglr.api.client.exception.RedisException;
 import com.heb.togglr.api.client.service.TogglrUpdateNotifier;
 
 @RestController
@@ -22,8 +23,9 @@ public class FeatureUpdateController {
     }
 
     @PostMapping(path = "/update")
-    public void featuresUpdatedWebhook(){
+    public void featuresUpdatedWebhook() throws RedisException {
         logger.debug("Request for update received.");
         this.togglrUpdateNotifier.registerNewUpdate();
+        //This method needs to error to let the webhook know it errored.
     }
 }
