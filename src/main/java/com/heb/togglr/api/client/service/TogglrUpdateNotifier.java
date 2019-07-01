@@ -1,10 +1,11 @@
 package com.heb.togglr.api.client.service;
 
 
+import com.heb.togglr.api.client.exception.RedisException;
 
 public interface TogglrUpdateNotifier {
 
-    public void registerNewUpdate();
+    public void registerNewUpdate() throws RedisException;
 
     public boolean doesClientNeedUpdate(String cacheId);
 

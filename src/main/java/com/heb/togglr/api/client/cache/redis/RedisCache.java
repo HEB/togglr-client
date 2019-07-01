@@ -9,6 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 import com.heb.togglr.api.client.cache.TogglrCache;
+import com.heb.togglr.api.client.exception.RedisException;
 import com.heb.togglr.api.client.model.response.FeatureResponse;
 import com.heb.togglr.api.client.model.response.RedisAvailableFeatureList;
 import com.heb.togglr.api.client.service.RedisService;
@@ -38,7 +39,13 @@ public class RedisCache extends TogglrCache {
 
     @Override
     public List<FeatureResponse> getCachedFeatures(String cacheId) {
-        RedisAvailableFeatureList availableFeatureList = this.redisService.getCachedFeatures(cacheId);
+        RedisAvailableFeatureList availableFeatureList = null;
+        try {
+            availableFeatureList = this.redisService.getCachedFeatures(cacheId);
+        } catch (RedisException e) {
+            logger.error("Error getting user features: " + e.getMessage());
+            return null;
+        }
         if(availableFeatureList != null) {
             return availableFeatureList.getAvailableFeatures();
         }else{
@@ -50,8 +57,13 @@ public class RedisCache extends TogglrCache {
     public void setCachedFeatures(String cacheId, List<FeatureResponse> featureResponses) {
         RedisAvailableFeatureList featureList = new RedisAvailableFeatureList();
         featureList.setAvailableFeatures(featureResponses);
-        featureList.setLastCachedVersion(this.redisService.getCurrentVersion());
+        try {
+            featureList.setLastCachedVersion(this.redisService.getCurrentVersion());
+            this.redisService.setCachedFeatures(cacheId, featureList);
+        } catch (RedisException e) {
+            logger.error("Error storing user config: " + e.getMessage());
+            e.printStackTrace();
+        }
 
-        this.redisService.setCachedFeatures(cacheId, featureList);
     }
 }
