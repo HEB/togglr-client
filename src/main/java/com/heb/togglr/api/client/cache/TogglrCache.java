@@ -1,8 +1,9 @@
 package com.heb.togglr.api.client.cache;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.heb.togglr.api.client.model.requests.ActiveFeaturesRequest;
+import com.heb.togglr.api.client.model.response.AvailableFeaturesList;
+import com.heb.togglr.api.client.model.response.FeatureResponse;
+import com.heb.togglr.api.client.service.TogglrUpdateNotifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,10 +11,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.client.RestTemplate;
 
-import com.heb.togglr.api.client.model.requests.ActiveFeaturesRequest;
-import com.heb.togglr.api.client.model.response.AvailableFeaturesList;
-import com.heb.togglr.api.client.model.response.FeatureResponse;
-import com.heb.togglr.api.client.service.TogglrUpdateNotifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class TogglrCache {
 
@@ -49,7 +48,7 @@ public abstract class TogglrCache {
         }
 
         if(features == null) {
-            logger.trace(cacheId + " has no cached features.");
+            logger.trace(cacheId + " v");
             try {
                 logger.trace("Making rest call to " + this.togglrUrl);
                 AvailableFeaturesList availableFeaturesList = this.restTemplate.postForObject(this.togglrUrl, activeFeaturesRequest, AvailableFeaturesList.class);

@@ -1,27 +1,26 @@
 package com.heb.togglr.api.client.cache.redis;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Service;
-
 import com.heb.togglr.api.client.cache.TogglrCache;
 import com.heb.togglr.api.client.exception.RedisException;
 import com.heb.togglr.api.client.model.response.FeatureResponse;
 import com.heb.togglr.api.client.model.response.RedisAvailableFeatureList;
 import com.heb.togglr.api.client.service.RedisService;
 import com.heb.togglr.api.client.service.TogglrUpdateNotifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @ConditionalOnProperty(
-        value="heb.togglr.client.cache-type",
+        value = "heb.togglr.client.cache-type",
         havingValue = "redis")
-public class RedisCache extends TogglrCache {
+public class TogglrRedisCache extends TogglrCache {
 
-    private static Logger logger = LoggerFactory.getLogger(RedisCache.class);
+    private static Logger logger = LoggerFactory.getLogger(TogglrRedisCache.class);
 
     @Value("${heb.togglr.client.app-id}")
     private Integer applicationId;
@@ -31,7 +30,7 @@ public class RedisCache extends TogglrCache {
 
     private RedisService redisService;
 
-    public RedisCache(TogglrUpdateNotifier updateNotifier, RedisService redisService) {
+    public TogglrRedisCache(TogglrUpdateNotifier updateNotifier, RedisService redisService) {
         super(updateNotifier);
         this.redisService = redisService;
     }
@@ -46,9 +45,9 @@ public class RedisCache extends TogglrCache {
             logger.error("Error getting user features: " + e.getMessage());
             return null;
         }
-        if(availableFeatureList != null) {
+        if (availableFeatureList != null) {
             return availableFeatureList.getAvailableFeatures();
-        }else{
+        } else {
             return null;
         }
     }

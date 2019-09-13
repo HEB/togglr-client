@@ -33,15 +33,15 @@ Add the following properties to your Spring Application (or configure them throu
 
 `heb.togglr.cache-time` is the amount of time you want Togglr features to be cached for. (Updates to Togglr will cause a cache refresh regardless of this value being set)
 
-`heb.togglr.client.cache-type` Value can be either `redis` or `in-memory`
+`heb.togglr.client.cache-type` Value can be either `redis`, `sql`, or `in-memory`
 
 If the `cache-type` is set to `redis` you'll need to include the following properties:
+
+#### Redis Specific Properties
 
 `heb.togglr.redis.host` Host for Redis
 
 `heb.togglr.redis.port` Port for Redis
-
-You can get your application ID from the Togglr Server.
 
 
 ### Integrate Your Code
@@ -79,6 +79,11 @@ For example, if you wanted to configure your server to have logic depending on i
 ```java
 this.togglrClient.getFeaturesForConfig(featuresRequest, "system")
 ```
+
+#### Integrating using the Sql Client
+
+To integrate using the SqlClient, you will need to provide an implementation of the `TogglrDatabaseService` for autowiring.
+
 
 ## Building From Source
 
