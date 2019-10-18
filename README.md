@@ -1,5 +1,5 @@
 # Togglr Spring Boot Client Library
-<img src="assets/images/tglr-logo-color.svg" width="400" height="200" />
+<img src="assets/tglr-logo-color.svg" width="400" height="200" />
 
 ## How to Use the Togglr Client
 
