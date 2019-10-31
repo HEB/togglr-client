@@ -1,5 +1,5 @@
 # Togglr Spring Boot Client Library
-
+<img src="assets/tglr-logo-color.svg" width="400" height="200" />
 
 ## How to Use the Togglr Client
 
@@ -59,7 +59,7 @@ the Togglr Client:
     }
 ```
 
-To get the Active Featuers for a user, build an ActiveFeatureRequest and make the call to the Togglr Client.
+To get the Active Features for a user, build an ActiveFeatureRequest and make the call to the Togglr Client.
 You *do not* have to set the `applicationId` in the ActiveFeatureRequest, it will be set by the client.
 
 ```java
