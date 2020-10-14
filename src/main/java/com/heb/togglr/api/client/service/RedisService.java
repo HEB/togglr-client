@@ -36,7 +36,7 @@ public class RedisService {
     private static JedisPool jedisPool;
 
     public RedisService(@Value("${heb.togglr.redis.host}") String redisServer, @Value("${heb.togglr.redis.port}") String redisPort){
-        logger.error("Redis Configuration:  \n   Host: " + redisServer + "\n   Port: " + redisPort);
+        logger.info("Redis Configuration:  \n   Host: " + redisServer + "\n   Port: " + redisPort);
         int port = Integer.parseInt(redisPort);
 
         jedisPool = new JedisPool(poolConfig, redisServer, port);
